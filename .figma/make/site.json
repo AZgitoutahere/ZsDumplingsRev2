@@ -1,0 +1,10 @@
+{
+  "description": "Showcase your food truck with a visually appealing one-page website featuring a hero image, menu, story, and schedule to attract hungry customers.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
