@@ -1,0 +1,2 @@
+event_id,date,start_time,end_time,location_id,status,public_note,active
+event-001,2026-08-15,10:00,15:00,ann-arbor-farmers-market,scheduled,Example row — replace with your confirmed event,FALSE

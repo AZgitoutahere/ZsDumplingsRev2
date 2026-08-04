@@ -1,0 +1,9 @@
+item_id,section,sort_order,name,description,image_key,image_url,badge,active,sold_out
+crispy-pork-soup-bao,dumpling,10,Crispy Pork Soup Bao,"Four pan-fried sheng jian bao with seasoned pork filling. Crispy golden bottom, pillowy top, and a burst of savory broth in every bite.",crispy-pork-soup-bao,,Most Ordered,TRUE,FALSE
+pork-soup-dumplings,dumpling,20,Pork Soup Dumplings,"Six delicate steamed pork xiao long bao soup dumplings filled with rich broth. Thin skin, maximum soup — handle with care.",pork-soup-dumplings,,,TRUE,FALSE
+beef-potstickers,dumpling,30,Crispy Beef Pot Stickers,"Eight hand-folded beef dumplings, pan-fried with a crispy skirt that adds a delicate crunch to every bite.",beef-potstickers,,,TRUE,FALSE
+beef-chili-oil,dumpling,40,Beef Dumplings with Chili Oil,"Eight boiled beef dumplings tossed in our house chili oil with garlic and sesame. Bold and unapologetic.",beef-chili-oil,,,TRUE,FALSE
+vegetarian-bao,dumpling,50,Vegetarian Bao,Three mushroom and vegetable steamed bao with delicate seasonings.,vegetarian-bao,,,TRUE,FALSE
+wild-chips,chip,10,Z's Wild Chips,Our house specialty spiced potato chips. The tingling heat could be addictive.,wild-chips,,,TRUE,FALSE
+kettle-chips,chip,20,Kettle Chips,"Classic crunchy kettle chips, salted to perfection.",kettle-chips,,,TRUE,FALSE
+drinks,drink,10,Drinks,Refreshing drinks to complete your meal.,drinks,,,TRUE,FALSE

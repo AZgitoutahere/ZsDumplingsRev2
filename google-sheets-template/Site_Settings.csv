@@ -1,0 +1,10 @@
+key,value
+entree_price,11
+combo_price,16
+chips_price,3
+drinks_price,4
+combo_description,"Includes one dumpling entrée, your choice of chips, and a drink."
+drinks_description,Refreshing drinks to complete your meal.
+drinks_options,"Homemade Strawberry, Mango, Lychee, and Plain Lemonade"
+menu_notice,"Bao made fresh daily. Menu subject to availability. Follow us on Instagram for daily specials."
+allergen_notice,Dumplings contain sesame oil and chili oil. Chips contain sesame and peanuts.

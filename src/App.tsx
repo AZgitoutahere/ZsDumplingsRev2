@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react'
 import heroBrand from '@/imports/ChatGPT_Image_Jul_30__2026__06_47_51_PM.png'
-import imgSJB from '@/imports/Jul_30__2026__08_34_33_PM.png'
-import imgXLB from '@/imports/ChatGPT_Image_Jul_30__2026__08_34_50_PM.png'
-import imgPotstickers from '@/imports/ChatGPT_Image_Jul_30__2026__08_38_58_PM.png'
-import imgChiliOil from '@/imports/ChatGPT_Image_Jul_30__2026__08_34_53_PM.png'
-import imgChips from '@/imports/ChatGPT_Image_Jul_30__2026__09_00_31_PM.png'
-import imgDrinks from '@/imports/ChatGPT_Image_Jul_30__2026__09_10_56_PM.png'
 import imgTrailer from '@/imports/ChatGPT_Image_Aug_2__2026__02_19_12_PM.png'
-import imgVegBao from '@/imports/ChatGPT_Image_Aug_2__2026__06_16_20_PM.png'
-import imgKettleChips from '@/imports/kettle-chips.jpg'
+import { FALLBACK_MENU, getMenuImage } from '@/data/menu'
+import { loadMenuFromGoogleSheets } from '@/services/googleSheets'
+import { loadScheduleFromGoogleSheets } from '@/services/schedule'
+import type { DisplayScheduleEvent } from '@/types/schedule'
 
 const C = {
   bg: '#0d0d0d',
@@ -39,15 +35,44 @@ const INPUT = {
 }
 
 function ContactForm() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', purpose: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', purpose: '', message: '', botField: '' })
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [field]: e.target.value }))
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitting(true)
+    setError('')
+
+    const body = new URLSearchParams({
+      'form-name': 'contact',
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      purpose: form.purpose,
+      message: form.message,
+      'bot-field': form.botField,
+    })
+
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+      if (!response.ok) throw new Error(`Form submission failed (${response.status})`)
+      setSubmitted(true)
+      setForm({ name: '', email: '', phone: '', purpose: '', message: '', botField: '' })
+    } catch (submissionError) {
+      console.error(submissionError)
+      setError("We couldn't send your message. Please try again in a moment.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) return (
@@ -64,26 +89,31 @@ function ContactForm() {
     (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+    <form name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <input type="hidden" name="form-name" value="contact" />
+      <p aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+        <label>Do not fill this out: <input name="bot-field" value={form.botField} onChange={set('botField')} tabIndex={-1} autoComplete="off" /></label>
+      </p>
+
+      <div className="contact-name-email" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Name *</label>
-          <input required value={form.name} onChange={set('name')} placeholder="Your name" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
+          <label htmlFor="contact-name" style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Name *</label>
+          <input id="contact-name" name="name" required value={form.name} onChange={set('name')} placeholder="Your name" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
         </div>
         <div>
-          <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Email *</label>
-          <input required type="email" value={form.email} onChange={set('email')} placeholder="your@email.com" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
+          <label htmlFor="contact-email" style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Email *</label>
+          <input id="contact-email" name="email" required type="email" value={form.email} onChange={set('email')} placeholder="your@email.com" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
         </div>
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Phone</label>
-        <input type="tel" value={form.phone} onChange={set('phone')} placeholder="(555) 000-0000" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
+        <label htmlFor="contact-phone" style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Phone</label>
+        <input id="contact-phone" name="phone" type="tel" value={form.phone} onChange={set('phone')} placeholder="(555) 000-0000" style={INPUT} onFocus={focusStyle} onBlur={blurStyle} />
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Purpose *</label>
-        <select required value={form.purpose} onChange={set('purpose')} style={{ ...INPUT, color: form.purpose ? '#ffffff' : 'rgba(255,255,255,0.35)', appearance: 'none', cursor: 'pointer' }} onFocus={focusStyle} onBlur={blurStyle}>
+        <label htmlFor="contact-purpose" style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Purpose *</label>
+        <select id="contact-purpose" name="purpose" required value={form.purpose} onChange={set('purpose')} style={{ ...INPUT, color: form.purpose ? '#ffffff' : 'rgba(255,255,255,0.35)', appearance: 'none', cursor: 'pointer' }} onFocus={focusStyle} onBlur={blurStyle}>
           <option value="" disabled>What's this about?</option>
           <option value="catering">Catering — private event</option>
           <option value="corporate">Corporate catering</option>
@@ -96,21 +126,23 @@ function ContactForm() {
       </div>
 
       <div>
-        <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Tell us more</label>
-        <textarea value={form.message} onChange={set('message')} placeholder="Describe your event, headcount, date, location, or anything else we should know..." rows={5} style={{ ...INPUT, resize: 'vertical', lineHeight: 1.6 }} onFocus={focusStyle} onBlur={blurStyle} />
+        <label htmlFor="contact-message" style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 8 }}>Tell us more</label>
+        <textarea id="contact-message" name="message" value={form.message} onChange={set('message')} maxLength={3000} placeholder="Describe your event, headcount, date, location, or anything else we should know..." rows={5} style={{ ...INPUT, resize: 'vertical', lineHeight: 1.6 }} onFocus={focusStyle} onBlur={blurStyle} />
       </div>
 
-      <button type="submit" style={{
+      {error && <p role="alert" style={{ margin: 0, fontSize: 13, color: '#ff8a8a', lineHeight: 1.5 }}>{error}</p>}
+
+      <button type="submit" disabled={submitting} style={{
         fontFamily: "'Inter', system-ui, sans-serif",
         fontSize: 14, fontWeight: 700, letterSpacing: '0.08em',
-        padding: '16px', borderRadius: 2, border: 'none', cursor: 'pointer',
-        backgroundColor: '#c41818', color: '#ffffff',
+        padding: '16px', borderRadius: 2, border: 'none', cursor: submitting ? 'wait' : 'pointer',
+        backgroundColor: submitting ? '#7f1515' : '#c41818', color: '#ffffff',
         textTransform: 'uppercase', transition: 'background 0.2s, transform 0.15s',
-        marginTop: 8,
+        marginTop: 8, opacity: submitting ? 0.75 : 1,
       }}
-        onMouseEnter={e => { e.currentTarget.style.background = '#a81212'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = '#c41818'; e.currentTarget.style.transform = 'translateY(0)' }}>
-        Send Message
+        onMouseEnter={e => { if (!submitting) { e.currentTarget.style.background = '#a81212'; e.currentTarget.style.transform = 'translateY(-1px)' } }}
+        onMouseLeave={e => { if (!submitting) { e.currentTarget.style.background = '#c41818'; e.currentTarget.style.transform = 'translateY(0)' } }}>
+        {submitting ? 'Sending…' : 'Send Message'}
       </button>
 
       <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
@@ -122,107 +154,35 @@ function ContactForm() {
 
 const STORY_IMG = 'https://images.unsplash.com/photo-1570604127008-f644337cfb8b?w=900&h=1100&fit=crop&auto=format'
 
-const MENU_ITEMS = [
-  {
-    name: "Crispy Pork Soup Bao",
-    desc: "Four pan-fried sheng jian bao with seasoned pork filling. Crispy golden bottom, pillowy top, and a burst of savory broth in every bite.",
-    price: "$12",
-    tag: "Most Ordered",
-    img: imgSJB,
-  },
-  {
-    name: "Pork Soup Dumplings",
-    desc: "Six delicate steamed pork xiao long bao soup dumplings filled with rich broth. Thin skin, maximum soup — handle with care.",
-    price: "$12",
-    tag: "",
-    img: imgXLB,
-  },
-  {
-    name: "Crispy Beef Pot Stickers",
-    desc: "Eight hand-folded beef dumplings, pan-fried with a crispy skirt that adds a delicate crunch to every bite.",
-    price: "$12",
-    tag: "",
-    img: imgPotstickers,
-  },
-  {
-    name: "Beef Dumplings with Chili Oil",
-    desc: "Eight boiled beef dumplings tossed in our house chili oil with garlic and sesame. Bold and unapologetic.",
-    price: "$12",
-    tag: "",
-    img: imgChiliOil,
-  },
-  {
-    name: "Vegetarian Bao",
-    desc: "Three mushroom and vegetable steamed bao with delicate seasonings.",
-    price: "$10",
-    tag: "",
-    img: imgVegBao,
-  },
-  {
-    name: "Z's Wild Chips",
-    desc: "Our house specialty spiced potato chips. The tingling heat could be addictive.",
-    price: "$4",
-    tag: "",
-    img: imgChips,
-  },
-  {
-    name: "Drinks",
-    desc: "Refreshing drinks to complete your meal.",
-    price: "",
-    tag: "",
-    img: imgDrinks,
-  },
-  {
-    name: "Combo",
-    desc: "Add chips and a drink to any dumpling order for $5.50.",
-    price: "$5.50",
-    tag: "",
-    img: "https://images.unsplash.com/photo-1608651273724-cfee1bd12cf6?w=800&h=600&fit=crop&auto=format",
-  },
-]
-
-const SCHEDULE = [
-  {
-    date: "Sat, Aug 1",
-    label: "Kerrytown Market",
-    address: "315 Detroit St, Ann Arbor, MI 48104",
-    time: "10am – 3pm",
-  },
-  {
-    date: "Sun, Aug 2",
-    label: "Fuller Park",
-    address: "525 W Stadium Blvd, Ann Arbor, MI 48103",
-    time: "11am – 4pm",
-  },
-  {
-    date: "Tue, Aug 4",
-    label: "Ann Arbor Farmers Market",
-    address: "407 N 5th Ave, Ann Arbor, MI 48104",
-    time: "7am – 3pm",
-  },
-  {
-    date: "Thu, Aug 6",
-    label: "U of M Diag",
-    address: "1100 N University Ave, Ann Arbor, MI 48109",
-    time: "11am – 3pm",
-  },
-  {
-    date: "Fri, Aug 7",
-    label: "Main St & Liberty",
-    address: "101 S Main St, Ann Arbor, MI 48104",
-    time: "11am – 2pm",
-  },
-  {
-    date: "Sat, Aug 8",
-    label: "Ypsilanti Depot Town",
-    address: "124 W Cross St, Ypsilanti, MI 48197",
-    time: "10am – 3pm",
-  },
-]
-
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [menu, setMenu] = useState(FALLBACK_MENU)
+  const [schedule, setSchedule] = useState<DisplayScheduleEvent[]>([])
+  const [scheduleLoaded, setScheduleLoaded] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    loadMenuFromGoogleSheets()
+      .then(content => { if (!cancelled) setMenu(content) })
+      .catch(error => console.warn('Using built-in menu because Google Sheets could not be loaded:', error))
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    loadScheduleFromGoogleSheets()
+      .then(events => { if (!cancelled) setSchedule(events) })
+      .catch(error => console.warn('Google Sheets schedule could not be loaded:', error))
+      .finally(() => { if (!cancelled) setScheduleLoaded(true) })
+    return () => { cancelled = true }
+  }, [])
+
+  const dumplings = menu.items.filter(item => item.section === 'dumpling')
+  const chips = menu.items.filter(item => item.section === 'chip')
+  const drinks = menu.items.filter(item => item.section === 'drink')
+  const drinkImage = drinks[0] ? getMenuImage(drinks[0]) : ''
+  const money = (value: number) => `$${Number.isInteger(value) ? value : value.toFixed(2)}`
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -388,14 +348,14 @@ export default function App() {
                   Choose Your Dumpling
                 </h3>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 42, color: C.red, lineHeight: 1 }}>$11</div>
+                  <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 42, color: C.red, lineHeight: 1 }}>{money(menu.settings.entreePrice)}</div>
                   <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: C.white40, textTransform: 'uppercase', marginTop: 3 }}>per order</div>
                 </div>
               </div>
 
               {/* Dumpling list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
-                {MENU_ITEMS.slice(0, 5).map((item, i) => (
+                {dumplings.map((item, i) => (
                   <div
                     key={i}
                     className="dumpling-item"
@@ -406,7 +366,7 @@ export default function App() {
                     {/* Image */}
                     <div className="dumpling-item-img" style={{ width: 140, flexShrink: 0, overflow: 'hidden', backgroundColor: C.imgPlaceholder }}>
                       <img
-                        src={item.img}
+                        src={getMenuImage(item)}
                         alt={item.name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 110 }}
                       />
@@ -417,17 +377,22 @@ export default function App() {
                         <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 22, letterSpacing: '0.06em', color: C.white, margin: 0, lineHeight: 1 }}>
                           {item.name}
                         </h3>
-                        {item.tag && (
+                        {item.badge && (
                           <span style={{
                             fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
                             padding: '3px 8px', backgroundColor: C.gold, color: C.bg, borderRadius: 1, flexShrink: 0,
                           }}>
-                            {item.tag}
+                            {item.badge}
+                          </span>
+                        )}
+                        {item.soldOut && (
+                          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', padding: '3px 8px', backgroundColor: C.red, color: C.white, borderRadius: 1, flexShrink: 0 }}>
+                            SOLD OUT
                           </span>
                         )}
                       </div>
                       <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.65, margin: 0 }}>
-                        {item.desc}
+                        {item.description}
                       </p>
                     </div>
                   </div>
@@ -478,11 +443,11 @@ export default function App() {
                 {/* Price + description */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
                   <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 58, color: C.red, lineHeight: 1, letterSpacing: '0.04em', flexShrink: 0 }}>
-                    $16
+                    {money(menu.settings.comboPrice)}
                   </div>
                   <div style={{ paddingTop: 8 }}>
                     <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.65, margin: 0 }}>
-                      Includes one dumpling entrée, your choice of chips, and a drink.
+                      {menu.settings.comboDescription}
                     </p>
                   </div>
                 </div>
@@ -494,18 +459,15 @@ export default function App() {
                   Choose Your Chips
                 </p>
                 <div style={{ display: 'flex', gap: 2 }}>
-                  {[
-                    { name: "Z's Wild Chips", desc: "Our house specialty spiced potato chips. The tingling heat could be addictive.", img: imgChips },
-                    { name: "Kettle Chips", desc: "Classic crunchy kettle chips, salted to perfection.", img: imgKettleChips },
-                  ].map((chip, i) => (
+                  {chips.map((chip, i) => (
                     <div key={i} style={{ flex: 1, backgroundColor: C.bg, overflow: 'hidden' }}>
-                      <img src={chip.img} alt={chip.name} style={{ width: '100%', height: 90, objectFit: 'cover', display: 'block' }} />
+                      <img src={getMenuImage(chip)} alt={chip.name} style={{ width: '100%', height: 90, objectFit: 'cover', display: 'block' }} />
                       <div style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
                           <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, letterSpacing: '0.06em', color: C.white }}>{chip.name}</div>
-                          <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, color: C.red, letterSpacing: '0.06em', flexShrink: 0 }}>$3</div>
+                          <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, color: C.red, letterSpacing: '0.06em', flexShrink: 0 }}>{money(menu.settings.chipsPrice)}</div>
                         </div>
-                        <p style={{ fontSize: 14, color: C.white55, lineHeight: 1.55, margin: 0 }}>{chip.desc}</p>
+                        <p style={{ fontSize: 14, color: C.white55, lineHeight: 1.55, margin: 0 }}>{chip.description}</p>
                       </div>
                     </div>
                   ))}
@@ -518,16 +480,16 @@ export default function App() {
                   Choose Your Drink
                 </p>
                 <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1 }}>
-                  <img src={imgDrinks} alt="Drinks" style={{ width: 100, height: 100, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
+                  <img src={drinkImage} alt="Drinks" style={{ width: 100, height: 100, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
                       <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.7, margin: 0 }}>
-                        Refreshing drinks to complete your meal.
+                        {menu.settings.drinksDescription}
                       </p>
-                      <span style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 22, color: C.red, flexShrink: 0 }}>$4</span>
+                      <span style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 22, color: C.red, flexShrink: 0 }}>{money(menu.settings.drinksPrice)}</span>
                     </div>
                     <p style={{ fontSize: 13, color: C.white40, letterSpacing: '0.02em', margin: 0, lineHeight: 1.6 }}>
-                      Homemade Strawberry, Mango, Lychee, and Plain Lemonade
+                      {menu.settings.drinksOptions}
                     </p>
                   </div>
                 </div>
@@ -537,10 +499,10 @@ export default function App() {
           </div>
 
           <p style={{ marginTop: 32, fontSize: 13, color: C.white40, textAlign: 'center', letterSpacing: '0.02em' }}>
-            Bao made fresh daily. Menu subject to availability. Follow us on Instagram for daily specials.
+            {menu.settings.menuNotice}
           </p>
           <p style={{ marginTop: 12, fontSize: 12, color: C.white25, textAlign: 'center', letterSpacing: '0.02em' }}>
-            ⚠️ <strong style={{ color: C.white40 }}>Allergen info:</strong> Dumplings contain sesame oil and chili oil. Chips contain sesame and peanuts.
+            ⚠️ <strong style={{ color: C.white40 }}>Allergen info:</strong> {menu.settings.allergenNotice}
           </p>
         </div>
       </section>
@@ -605,12 +567,12 @@ export default function App() {
               </div>
 
               <div style={{ border: `1px solid ${C.white10}` }}>
-                {SCHEDULE.map((row, i) => (
-                  <div key={i} className="schedule-row" style={{
+                {schedule.length > 0 ? schedule.map((row, i) => (
+                  <div key={row.id} className="schedule-row" style={{
                     display: 'grid', gridTemplateColumns: '110px 1fr 90px',
                     alignItems: 'center', padding: '16px 20px',
-                    borderBottom: i < SCHEDULE.length - 1 ? `1px solid ${C.white10}` : 'none',
-                    transition: 'background 0.2s',
+                    borderBottom: i < schedule.length - 1 ? `1px solid ${C.white10}` : 'none',
+                    transition: 'background 0.2s', opacity: row.status === 'cancelled' ? 0.55 : 1,
                   }}
                     onMouseEnter={e => (e.currentTarget.style.backgroundColor = C.white03)}
                     onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}>
@@ -618,24 +580,32 @@ export default function App() {
                       fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 15, fontWeight: 700,
                       color: C.white, letterSpacing: '0.06em',
                     }}>
-                      {row.date}
+                      {row.dateLabel}
                     </span>
                     <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(row.address)}`}
+                      href={row.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ fontSize: 13, color: C.white70, textDecoration: 'none', transition: 'color 0.2s' }}
                       onMouseEnter={e => (e.currentTarget.style.color = C.white)}
                       onMouseLeave={e => (e.currentTarget.style.color = C.white70)}
                     >
-                      <span style={{ display: 'block', fontWeight: 500 }}>{row.label}</span>
+                      <span style={{ display: 'block', fontWeight: 500 }}>
+                        {row.location.name}
+                        {row.status !== 'scheduled' && <strong style={{ marginLeft: 8, color: C.red, textTransform: 'uppercase', fontSize: 10 }}>{row.status.replace('_', ' ')}</strong>}
+                      </span>
                       <span className="schedule-address-detail" style={{ display: 'block', fontSize: 11, color: C.white40, marginTop: 2 }}>{row.address}</span>
+                      {row.publicNote && <span style={{ display: 'block', fontSize: 11, color: C.white55, marginTop: 3 }}>{row.publicNote}</span>}
                     </a>
                     <span style={{ fontSize: 12, fontWeight: 500, color: C.white55, letterSpacing: '0.02em', textAlign: 'right' }}>
-                      {row.time}
+                      {row.timeLabel}
                     </span>
                   </div>
-                ))}
+                )) : (
+                  <div style={{ padding: '28px 20px', color: C.white55, fontSize: 14, lineHeight: 1.7 }}>
+                    {scheduleLoaded ? 'Our upcoming trailer schedule will be posted here soon.' : 'Loading upcoming locations…'}
+                  </div>
+                )}
               </div>
 
               <p style={{ marginTop: 20, fontSize: 12, color: C.white40, letterSpacing: '0.02em' }}>

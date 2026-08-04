@@ -9,6 +9,16 @@
   </head>
   <body>
     <!-- figma:body-start -->
+
+    <!-- Netlify scans this hidden HTML form during deployment. The visible React form submits to the same form name. -->
+    <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="tel" name="phone" />
+      <input type="text" name="purpose" />
+      <textarea name="message"></textarea>
+      <input type="text" name="bot-field" />
+    </form>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- figma:body-end -->
