@@ -282,7 +282,7 @@ export default function App() {
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            style={{ width: '100%', height: 'auto', display: 'block' }}
+            style={{ width: '100%', display: 'block', maxHeight: '75vh', objectFit: 'cover', objectPosition: 'center' }}
           />
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: `linear-gradient(to bottom, transparent, ${C.bg})` }} />
         </div>
