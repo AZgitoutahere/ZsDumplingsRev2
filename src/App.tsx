@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import heroBrand from '@/imports/ChatGPT_Image_Jul_30__2026__06_47_51_PM.png'
-import imgTrailer from '@/imports/ChatGPT_Image_Aug_2__2026__02_19_12_PM.png'
+import heroBrand from '@/assets/images/brand/zs-dumplings-hero.webp'
+import imgTrailer from '@/assets/images/trailer/zs-dumplings-food-trailer.webp'
 import { FALLBACK_MENU, getMenuImage } from '@/data/menu'
 import { loadMenuFromGoogleSheets } from '@/services/googleSheets'
 import { loadScheduleFromGoogleSheets } from '@/services/schedule'
@@ -277,6 +277,11 @@ export default function App() {
           <img
             src={heroBrand}
             alt="Z's Dumplings — Made to be Craved. Brand hero with mascot and fresh sheng jian bao."
+            width={1717}
+            height={916}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             style={{ width: '100%', display: 'block', maxHeight: '75vh', objectFit: 'cover', objectPosition: 'center' }}
           />
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: `linear-gradient(to bottom, transparent, ${C.bg})` }} />
@@ -368,6 +373,8 @@ export default function App() {
                       <img
                         src={getMenuImage(item)}
                         alt={item.name}
+                        loading="lazy"
+                        decoding="async"
                         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 110 }}
                       />
                     </div>
@@ -461,7 +468,7 @@ export default function App() {
                 <div style={{ display: 'flex', gap: 2 }}>
                   {chips.map((chip, i) => (
                     <div key={i} style={{ flex: 1, backgroundColor: C.bg, overflow: 'hidden' }}>
-                      <img src={getMenuImage(chip)} alt={chip.name} style={{ width: '100%', height: 90, objectFit: 'cover', display: 'block' }} />
+                      <img src={getMenuImage(chip)} alt={chip.name} loading="lazy" decoding="async" style={{ width: '100%', height: 90, objectFit: 'cover', display: 'block' }} />
                       <div style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
                           <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, letterSpacing: '0.06em', color: C.white }}>{chip.name}</div>
@@ -480,7 +487,7 @@ export default function App() {
                   Choose Your Drink
                 </p>
                 <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1 }}>
-                  <img src={drinkImage} alt="Drinks" style={{ width: 100, height: 100, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
+                  <img src={drinkImage} alt="Drinks" loading="lazy" decoding="async" style={{ width: 100, height: 100, objectFit: 'cover', flexShrink: 0, display: 'block' }} />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
                       <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.7, margin: 0 }}>
@@ -517,6 +524,8 @@ export default function App() {
               <img
                 src={STORY_IMG}
                 alt="Chef folding dumplings by hand"
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
@@ -618,6 +627,10 @@ export default function App() {
               <img
                 src={imgTrailer}
                 alt="Z's Dumplings food trailer open for service"
+                width={1448}
+                height={1086}
+                loading="lazy"
+                decoding="async"
                 style={{ width: '100%', display: 'block', objectFit: 'cover', borderRadius: 2 }}
               />
             </div>

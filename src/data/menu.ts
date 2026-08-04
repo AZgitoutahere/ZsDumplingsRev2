@@ -1,11 +1,11 @@
-import imgSJB from '@/imports/Jul_30__2026__08_34_33_PM.png'
-import imgXLB from '@/imports/ChatGPT_Image_Jul_30__2026__08_34_50_PM.png'
-import imgPotstickers from '@/imports/ChatGPT_Image_Jul_30__2026__08_38_58_PM.png'
-import imgChiliOil from '@/imports/ChatGPT_Image_Jul_30__2026__08_34_53_PM.png'
-import imgChips from '@/imports/ChatGPT_Image_Jul_30__2026__09_00_31_PM.png'
-import imgDrinks from '@/imports/ChatGPT_Image_Jul_30__2026__09_10_56_PM.png'
-import imgVegBao from '@/imports/ChatGPT_Image_Aug_2__2026__06_16_20_PM.png'
-import imgKettleChips from '@/imports/kettle-chips.jpg'
+import imgSJB from '@/assets/images/menu/shanghai-crispy-soup-bao.webp'
+import imgXLB from '@/assets/images/menu/pork-soup-dumplings.webp'
+import imgPotstickers from '@/assets/images/menu/crispy-beef-potstickers.webp'
+import imgChiliOil from '@/assets/images/menu/beef-dumplings-chili-oil.webp'
+import imgChips from '@/assets/images/menu/zs-wild-chips.webp'
+import imgDrinks from '@/assets/images/menu/bottled-drinks.webp'
+import imgVegBao from '@/assets/images/menu/vegetarian-bao.webp'
+import imgKettleChips from '@/assets/images/menu/kettle-chips.webp'
 import type { MenuContent } from '@/types/menu'
 
 export const IMAGE_MAP: Record<string, string> = {
@@ -25,7 +25,7 @@ export const FALLBACK_MENU: MenuContent = {
     comboPrice: 16,
     chipsPrice: 3,
     drinksPrice: 4,
-    comboDescription: 'Includes one dumpling entrée, your choice of chips, and a drink.',
+    comboDescription: 'Includes one dumpling order, your choice of chips, and a drink.',
     drinksDescription: 'Refreshing drinks to complete your meal.',
     drinksOptions: 'Homemade Strawberry, Mango, Lychee, and Plain Lemonade',
     menuNotice: 'Bao made fresh daily. Menu subject to availability. Follow us on Instagram for daily specials.',
