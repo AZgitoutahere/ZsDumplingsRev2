@@ -1,22 +1,31 @@
-import imgSJB from '@/assets/images/menu/shanghai-crispy-soup-bao.webp'
-import imgXLB from '@/assets/images/menu/pork-soup-dumplings.webp'
-import imgPotstickers from '@/assets/images/menu/crispy-beef-potstickers.webp'
-import imgChiliOil from '@/assets/images/menu/beef-dumplings-chili-oil.webp'
-import imgChips from '@/assets/images/menu/zs-wild-chips.webp'
-import imgDrinks from '@/assets/images/menu/bottled-drinks.webp'
-import imgVegBao from '@/assets/images/menu/vegetarian-bao.webp'
-import imgKettleChips from '@/assets/images/menu/kettle-chips.webp'
 import type { MenuContent } from '@/types/menu'
 
-export const IMAGE_MAP: Record<string, string> = {
-  'crispy-pork-soup-bao': imgSJB,
-  'pork-soup-dumplings': imgXLB,
-  'beef-potstickers': imgPotstickers,
-  'beef-chili-oil': imgChiliOil,
-  'vegetarian-bao': imgVegBao,
-  'wild-chips': imgChips,
-  'kettle-chips': imgKettleChips,
-  drinks: imgDrinks,
+// Vite automatically includes every image placed in src/assets/images/menu.
+// The filename (without its extension) becomes the Google Sheets image_key.
+// Example: beef-sandwich.webp -> image_key = beef-sandwich
+const MENU_IMAGE_MODULES = import.meta.glob(
+  '/src/assets/images/menu/*.{webp,png,jpg,jpeg,avif,gif}',
+  { eager: true, import: 'default' },
+) as Record<string, string>
+
+const AUTO_IMAGE_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(MENU_IMAGE_MODULES).map(([path, url]) => {
+    const filename = path.split('/').pop() || ''
+    const imageKey = filename.replace(/\.[^.]+$/, '')
+    return [imageKey, url]
+  }),
+)
+
+// One-time compatibility aliases for the image_key values currently used in
+// Google Sheets. These keep the existing live menu working even though a few
+// local filenames do not yet match the spreadsheet keys. New images do not
+// need to be added here; just make image_key match the filename.
+const LEGACY_IMAGE_ALIASES: Record<string, string> = {
+  'crispy-pork-soup-bao': 'shanghai-crispy-soup-bao',
+  'pork-soup-dumplings': 'pork-soup-dumpling',
+  'beef-chili-oil': 'beef-dumplings-chili-oil',
+  'wild-chips': 'zs-wild-chips_old',
+  drinks: 'bottled-drinks',
 }
 
 export const FALLBACK_MENU: MenuContent = {
@@ -83,5 +92,14 @@ export const FALLBACK_MENU: MenuContent = {
 }
 
 export function getMenuImage(item: { imageUrl?: string; imageKey?: string }): string {
-  return item.imageUrl?.trim() || (item.imageKey ? IMAGE_MAP[item.imageKey] : '') || ''
+  const imageUrl = item.imageUrl?.trim()
+  if (imageUrl) return imageUrl
+
+  const imageKey = item.imageKey?.trim()
+  if (!imageKey) return ''
+
+  // Accept either a plain key (recommended) or a filename with an extension.
+  const normalizedKey = imageKey.replace(/\.[^.]+$/, '')
+  const lookupKey = LEGACY_IMAGE_ALIASES[normalizedKey] || normalizedKey
+  return AUTO_IMAGE_MAP[lookupKey] || ''
 }
