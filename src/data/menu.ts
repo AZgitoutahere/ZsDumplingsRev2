@@ -1,32 +1,22 @@
 import type { MenuContent } from '@/types/menu'
 
-// Vite automatically includes every image placed in src/assets/images/menu.
-// The filename (without its extension) becomes the Google Sheets image_key.
-// Example: beef-sandwich.webp -> image_key = beef-sandwich
-const MENU_IMAGE_MODULES = import.meta.glob(
-  '/src/assets/images/menu/*.{webp,png,jpg,jpeg,avif,gif}',
-  { eager: true, import: 'default' },
-) as Record<string, string>
+// Automatically discover every WebP image in the menu image folder.
+// The Google Sheets image_key must match the filename without ".webp".
+// Example:
+//   image_key: shrimp-chili-oil
+//   file: src/assets/images/menu/shrimp-chili-oil.webp
+const menuImageModules = import.meta.glob('../assets/images/menu/*.webp', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>
 
-const AUTO_IMAGE_MAP: Record<string, string> = Object.fromEntries(
-  Object.entries(MENU_IMAGE_MODULES).map(([path, url]) => {
+export const IMAGE_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(menuImageModules).map(([path, url]) => {
     const filename = path.split('/').pop() || ''
-    const imageKey = filename.replace(/\.[^.]+$/, '')
+    const imageKey = filename.replace(/\.webp$/i, '')
     return [imageKey, url]
   }),
 )
-
-// One-time compatibility aliases for the image_key values currently used in
-// Google Sheets. These keep the existing live menu working even though a few
-// local filenames do not yet match the spreadsheet keys. New images do not
-// need to be added here; just make image_key match the filename.
-const LEGACY_IMAGE_ALIASES: Record<string, string> = {
-  'crispy-pork-soup-bao': 'shanghai-crispy-soup-bao',
-  'pork-soup-dumplings': 'pork-soup-dumpling',
-  'beef-chili-oil': 'beef-dumplings-chili-oil',
-  'wild-chips': 'zs-wild-chips_old',
-  drinks: 'bottled-drinks',
-}
 
 export const FALLBACK_MENU: MenuContent = {
   settings: {
@@ -45,13 +35,13 @@ export const FALLBACK_MENU: MenuContent = {
       id: 'crispy-pork-soup-bao', section: 'dumpling', sortOrder: 10,
       name: 'Crispy Pork Soup Bao',
       description: 'Four pan-fried sheng jian bao with seasoned pork filling. Crispy golden bottom, pillowy top, and a burst of savory broth in every bite.',
-      imageKey: 'crispy-pork-soup-bao', badge: 'Most Ordered', active: true, soldOut: false,
+      imageKey: 'shanghai-crispy-soup-bao', badge: 'Most Ordered', active: true, soldOut: false,
     },
     {
       id: 'pork-soup-dumplings', section: 'dumpling', sortOrder: 20,
       name: 'Pork Soup Dumplings',
       description: 'Six delicate steamed pork xiao long bao soup dumplings filled with rich broth. Thin skin, maximum soup — handle with care.',
-      imageKey: 'pork-soup-dumplings', active: true, soldOut: false,
+      imageKey: 'pork-soup-dumpling', active: true, soldOut: false,
     },
     {
       id: 'beef-potstickers', section: 'dumpling', sortOrder: 30,
@@ -63,7 +53,7 @@ export const FALLBACK_MENU: MenuContent = {
       id: 'beef-chili-oil', section: 'dumpling', sortOrder: 40,
       name: 'Beef Dumplings with Chili Oil',
       description: 'Eight boiled beef dumplings tossed in our house chili oil with garlic and sesame. Bold and unapologetic.',
-      imageKey: 'beef-chili-oil', active: true, soldOut: false,
+      imageKey: 'beef-dumplings-chili-oil', active: true, soldOut: false,
     },
     {
       id: 'vegetarian-bao', section: 'dumpling', sortOrder: 50,
@@ -75,7 +65,7 @@ export const FALLBACK_MENU: MenuContent = {
       id: 'wild-chips', section: 'chip', sortOrder: 10,
       name: "Z's Wild Chips",
       description: 'Our house specialty spiced potato chips. The tingling heat could be addictive.',
-      imageKey: 'wild-chips', active: true, soldOut: false,
+      imageKey: 'zs-wild-chips', active: true, soldOut: false,
     },
     {
       id: 'kettle-chips', section: 'chip', sortOrder: 20,
@@ -86,7 +76,7 @@ export const FALLBACK_MENU: MenuContent = {
     {
       id: 'drinks', section: 'drink', sortOrder: 10,
       name: 'Drinks', description: 'Refreshing drinks to complete your meal.',
-      imageKey: 'drinks', active: true, soldOut: false,
+      imageKey: 'bottled-drinks', active: true, soldOut: false,
     },
   ],
 }
@@ -98,8 +88,5 @@ export function getMenuImage(item: { imageUrl?: string; imageKey?: string }): st
   const imageKey = item.imageKey?.trim()
   if (!imageKey) return ''
 
-  // Accept either a plain key (recommended) or a filename with an extension.
-  const normalizedKey = imageKey.replace(/\.[^.]+$/, '')
-  const lookupKey = LEGACY_IMAGE_ALIASES[normalizedKey] || normalizedKey
-  return AUTO_IMAGE_MAP[lookupKey] || ''
+  return IMAGE_MAP[imageKey] || ''
 }
