@@ -24,7 +24,7 @@ export const FALLBACK_MENU: MenuContent = {
     comboPrice: 16,
     chipsPrice: 3,
     drinksPrice: 4,
-    comboDescription: 'Includes one dumpling order, your choice of chips, and a drink.',
+    comboDescription: 'Includes one dumpling order, your choice of side, and a drink.',
     drinksDescription: 'Refreshing drinks to complete your meal.',
     drinksOptions: 'Homemade Strawberry, Mango, Lychee, and Plain Lemonade',
     menuNotice: 'Bao made fresh daily. Menu subject to availability. Follow us on Instagram for daily specials.',

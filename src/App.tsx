@@ -434,7 +434,7 @@ export default function App() {
                   {[
                     { icon: '🥟', label: 'Any Dumpling' },
                     null,
-                    { icon: '🍟', label: 'Chips' },
+                    { icon: '🍟', label: 'Side' },
                     null,
                     { icon: '🥤', label: 'Drink' },
                   ].map((item, i) => item === null ? (
@@ -463,7 +463,7 @@ export default function App() {
               {/* CHIPS */}
               <div style={{ backgroundColor: C.card, padding: '24px 28px' }}>
                 <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.18em', color: C.red, textTransform: 'uppercase', marginBottom: 18 }}>
-                  Choose Your Chips
+                  Choose Your Side
                 </p>
                 <div style={{ display: 'flex', gap: 2 }}>
                   {chips.map((chip, i) => (
