@@ -54,6 +54,13 @@ function number(value: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback
 }
 
+function optionalPrice(value: string | undefined): number | null {
+  const trimmed = value?.trim() || ''
+  if (!trimmed) return null
+  const parsed = Number(trimmed.replace(/[$,]/g, ''))
+  return Number.isFinite(parsed) ? parsed : null
+}
+
 function validSection(value: string): value is MenuSection {
   return value === 'dumpling' || value === 'chip' || value === 'drink'
 }
@@ -92,10 +99,10 @@ function parseSettings(text: string): MenuSettings {
   const values = Object.fromEntries(csvToObjects(text).map(row => [row.key?.trim(), row.value?.trim()]))
   const fallback = FALLBACK_MENU.settings
   return {
-    entreePrice: number(values.entree_price || '', fallback.entreePrice),
-    comboPrice: number(values.combo_price || '', fallback.comboPrice),
-    chipsPrice: number(values.chips_price || '', fallback.chipsPrice),
-    drinksPrice: number(values.drinks_price || '', fallback.drinksPrice),
+    entreePrice: optionalPrice(values.entree_price),
+    comboPrice: optionalPrice(values.combo_price),
+    chipsPrice: optionalPrice(values.chips_price),
+    drinksPrice: optionalPrice(values.drinks_price),
     comboDescription: values.combo_description || fallback.comboDescription,
     drinksDescription: values.drinks_description || fallback.drinksDescription,
     drinksOptions: values.drinks_options || fallback.drinksOptions,

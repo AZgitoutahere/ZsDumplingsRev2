@@ -352,10 +352,12 @@ export default function App() {
                 <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(20px, 2.5vw, 28px)', letterSpacing: '0.06em', color: C.white, margin: 0, flex: 1, lineHeight: 1 }}>
                   Choose Your Dumpling
                 </h3>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 42, color: C.red, lineHeight: 1 }}>{money(menu.settings.entreePrice)}</div>
-                  <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: C.white40, textTransform: 'uppercase', marginTop: 3 }}>per order</div>
-                </div>
+                {menu.settings.entreePrice !== null && (
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 42, color: C.red, lineHeight: 1 }}>{money(menu.settings.entreePrice)}</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', color: C.white40, textTransform: 'uppercase', marginTop: 3 }}>per order</div>
+                  </div>
+                )}
               </div>
 
               {/* Dumpling list */}
@@ -449,9 +451,11 @@ export default function App() {
 
                 {/* Price + description */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 18 }}>
-                  <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 58, color: C.red, lineHeight: 1, letterSpacing: '0.04em', flexShrink: 0 }}>
-                    {money(menu.settings.comboPrice)}
-                  </div>
+                  {menu.settings.comboPrice !== null && (
+                    <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 58, color: C.red, lineHeight: 1, letterSpacing: '0.04em', flexShrink: 0 }}>
+                      {money(menu.settings.comboPrice)}
+                    </div>
+                  )}
                   <div style={{ paddingTop: 8 }}>
                     <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.65, margin: 0 }}>
                       {menu.settings.comboDescription}
@@ -472,7 +476,9 @@ export default function App() {
                       <div style={{ padding: '12px 14px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 5 }}>
                           <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, letterSpacing: '0.06em', color: C.white }}>{chip.name}</div>
-                          <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, color: C.red, letterSpacing: '0.06em', flexShrink: 0 }}>{money(menu.settings.chipsPrice)}</div>
+                          {menu.settings.chipsPrice !== null && (
+                            <div style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 17, color: C.red, letterSpacing: '0.06em', flexShrink: 0 }}>{money(menu.settings.chipsPrice)}</div>
+                          )}
                         </div>
                         <p style={{ fontSize: 14, color: C.white55, lineHeight: 1.55, margin: 0 }}>{chip.description}</p>
                       </div>
@@ -493,7 +499,9 @@ export default function App() {
                       <p style={{ fontSize: 15, color: C.white55, lineHeight: 1.7, margin: 0 }}>
                         {menu.settings.drinksDescription}
                       </p>
-                      <span style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 22, color: C.red, flexShrink: 0 }}>{money(menu.settings.drinksPrice)}</span>
+                      {menu.settings.drinksPrice !== null && (
+                        <span style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 22, color: C.red, flexShrink: 0 }}>{money(menu.settings.drinksPrice)}</span>
+                      )}
                     </div>
                     <p style={{ fontSize: 13, color: C.white40, letterSpacing: '0.02em', margin: 0, lineHeight: 1.6 }}>
                       {menu.settings.drinksOptions}
@@ -542,13 +550,13 @@ export default function App() {
               Having spent time in Shanghai, some of life's happiest moments happened around a sizzling pan of sheng jian bao. When the lid was lifted, steam rushed into the air, the aroma filled the street, and everyone gathered to enjoy dumplings that were crispy on the bottom, juicy inside, and made fresh by hand.
             </p>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: C.white55, marginBottom: 20 }}>
-              Years later, after spending 15 years in corporate jobs, I knew it was time to return to the streets. The same attention to detail, problem-solving, and pursuit of quality that shaped a professional career became the foundation for recreating those unforgettable flavors.
+              Years later, after spending 15 years in corporate jobs, I knew I was ready to reclaim the joy of Shanghai’s streets that I remembered. The same attention to detail, problem-solving, and pursuit of quality that shaped a professional career became the foundation for recreating those unforgettable flavors.
             </p>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: C.white55, marginBottom: 20 }}>
-              Today, Z's Dumplings brings that Shanghai street-food tradition to Michigan — hand-folded dumplings, made with care, cooked fresh, and served with the same excitement that inspired them years ago.
+              Today, Z's Dumplings brings that Shanghai street-food tradition to Michigan — hand-made dumplings, cooked fresh, and served with the same excitement that inspired them years ago.
             </p>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: C.white55, marginBottom: 20 }}>
-              Every sizzling pan is more than a meal. It's a taste of home, made to be shared.
+              Every sizzling pan is more than a meal. It's a taste of joy I can now share with all of you.
             </p>
             <p style={{ fontSize: 15, lineHeight: 1.8, color: C.white70, marginBottom: 40, fontStyle: 'italic' }}>
               Z's Dumplings — Made to be craved.

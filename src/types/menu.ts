@@ -14,10 +14,10 @@ export interface MenuItem {
 }
 
 export interface MenuSettings {
-  entreePrice: number
-  comboPrice: number
-  chipsPrice: number
-  drinksPrice: number
+  entreePrice: number | null
+  comboPrice: number | null
+  chipsPrice: number | null
+  drinksPrice: number | null
   comboDescription: string
   drinksDescription: string
   drinksOptions: string
