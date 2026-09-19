@@ -287,8 +287,20 @@ export default function App() {
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 80, background: `linear-gradient(to bottom, transparent, ${C.bg})` }} />
         </div>
 
-        {/* Location + CTA buttons below the image */}
-        <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', color: C.gold, textTransform: 'uppercase', margin: '28px 24px 12px' }}>
+        {/* SEO-friendly page heading + location */}
+        <h1 style={{
+          textAlign: 'center',
+          fontFamily: "'Bebas Neue', Impact, sans-serif",
+          fontSize: 'clamp(30px, 4vw, 44px)',
+          fontWeight: 400,
+          letterSpacing: '0.04em',
+          color: C.white,
+          margin: '28px 24px 6px',
+          lineHeight: 1.1,
+        }}>
+          Handmade Shanghai-Style Dumplings in Ann Arbor
+        </h1>
+        <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 600, letterSpacing: '0.18em', color: C.gold, textTransform: 'uppercase', margin: '0 24px 12px' }}>
           Ann Arbor, Michigan
         </p>
         <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', padding: '0 24px 16px' }}>

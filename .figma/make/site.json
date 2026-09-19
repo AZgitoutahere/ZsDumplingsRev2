@@ -1,9 +1,9 @@
 {
   "title": "Z's Dumplings | Shanghai-Style Dumplings in Ann Arbor",
-  "description": "Fresh pan-fried and steamed dumplings, crispy soup bao, seasoned chips, catering, and food trailer locations from Z's Dumplings in Southeast Michigan.",
+  "description": "Handmade Shanghai-style dumplings, sheng jian bao, sides, catering, and food trailer locations in Ann Arbor and Southeast Michigan.",
   "language": "en",
   "robots": {
-    "index": false
+    "index": true
   },
   "icons": {
     "icon": "/favicon.png"
