@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import heroBrand from '@/assets/images/brand/zs-dumplings-hero.webp'
 import imgTrailer from '@/assets/images/trailer/zs-dumplings-food-trailer.webp'
+import storyCooking from '@/assets/images/story/sheng-jian-bao-cooking.webp'
 import { FALLBACK_MENU, getMenuImage } from '@/data/menu'
 import { loadMenuFromGoogleSheets } from '@/services/googleSheets'
 import { loadScheduleFromGoogleSheets } from '@/services/schedule'
@@ -152,7 +153,7 @@ function ContactForm() {
   )
 }
 
-const STORY_IMG = 'https://images.unsplash.com/photo-1570604127008-f644337cfb8b?w=900&h=1100&fit=crop&auto=format'
+const STORY_IMG = storyCooking
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
@@ -543,7 +544,7 @@ export default function App() {
             <div className="story-image" style={{ height: 580, overflow: 'hidden', backgroundColor: C.imgPlaceholder }}>
               <img
                 src={STORY_IMG}
-                alt="Chef folding dumplings by hand"
+                alt="Cooking fresh sheng jian bao by hand"
                 loading="lazy"
                 decoding="async"
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
